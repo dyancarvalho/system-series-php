@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use App\Http\Requests\SeriesFormRequest;
 
-use App\Models\Serie;
+use App\Models\Series;
 
 use Illuminate\Http\Request;
 
@@ -14,7 +14,7 @@ class SeriesController extends Controller
      */
     public function index(Request $request)
     {
-        $series = Serie::all();
+        $series = Series::all();
         $mensagemSucesso = $request->session()->get('mensagem.sucesso');
 
         return view('series.index')->with('series', $series)
@@ -34,7 +34,7 @@ class SeriesController extends Controller
      */
     public function store(SeriesFormRequest $request)
     {
-        $series = Serie::create($request->all());
+        $series = Series::create($request->all());
 
         return to_route('series.index')
         ->with('mensagem.sucesso', "Série '{$series->nome}' adicionada com sucesso");
@@ -50,7 +50,7 @@ class SeriesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Serie $series)
+    public function edit(Series $series)
     {
         return view('series.edit')->with('serie', $series);
     }
@@ -58,7 +58,7 @@ class SeriesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(SeriesFormRequest $request, Serie $series)
+    public function update(SeriesFormRequest $request, Series $series)
     {
         $series->nome = $request->nome;
         $series->save();
@@ -70,7 +70,7 @@ class SeriesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Serie $series)
+    public function destroy(Series $series)
     {        
         $series->delete();
         

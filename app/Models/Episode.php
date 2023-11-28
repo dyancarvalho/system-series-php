@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-
-use  App\Models\Season;
+use App\Models\Season;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

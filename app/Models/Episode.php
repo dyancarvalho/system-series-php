@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Episode extends Model
 {
     use HasFactory;
+    protected $fillable = ['number'];
     
     public $timestamps = false;
 

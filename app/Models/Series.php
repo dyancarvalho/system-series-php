@@ -14,7 +14,7 @@ class Series extends Model
 
     protected $fillable = ['nome'];
     
-    public function temporadas()
+    public function season()
     {
         return $this->hasMany(Season::class, 'series_id');
     }

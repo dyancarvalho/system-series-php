@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\Season;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 
 class Episode extends Model
 {
@@ -17,5 +18,7 @@ class Episode extends Model
     {
         return $this->belongsTo(Season::class);
     }
+
+
 
 }

@@ -1,4 +1,4 @@
-<x-layout title="Episódios">  
+<x-layout title="Episódios" :mensagem-sucesso="$mensagemSucesso">  
     <form method="POST">
         @csrf
         <ul class="list-group">    

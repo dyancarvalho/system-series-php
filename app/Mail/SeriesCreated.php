@@ -22,7 +22,9 @@ class SeriesCreated extends Mailable
         public int $qtdTemporadas,
         public int $episodiosPorTemporada,
     )
-    {}
+    {        
+        $this->subject = "Série $nomeSerie criada";   
+    }
 
     /**
      * Get the message envelope.

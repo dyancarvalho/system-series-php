@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SeriesFormRequest;
-use App\Repositories\SeriesRepository;
-use App\Models\Series;
+use DateTime;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Models\Series;
 use App\Mail\SeriesCreated;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Mail;
+use App\Repositories\SeriesRepository;
+use App\Http\Requests\SeriesFormRequest;
 
 class SeriesController extends Controller
 {
@@ -45,14 +47,15 @@ class SeriesController extends Controller
         $serie = $this->repository->add($request);
 
         $userList = User::all();
-        foreach ($userList as $user) {
+        foreach ($userList as $index => $user) {
             $email = new SeriesCreated(
                 $serie->nome,
                 $serie->id,
                 $request->seasonsQty,
                 $request->episodesPerSeason,
             );
-            Mail::to($user)->send($email);
+            $when = nou()->addSeconds($index * 5);
+            Mail::to($user)->later($when, $email);         
         }
 
         return to_route('series.index')

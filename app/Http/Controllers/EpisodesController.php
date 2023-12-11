@@ -57,6 +57,11 @@ class EpisodesController extends Controller
     public function update(Request $request, Season $season)
     {
         $watchedEpisodes = $request->episodes;
+
+        if (!is_array($watchedEpisodes)) {
+            $watchedEpisodes = [];
+        }
+
         $season->episodes->each(function (Episode $episode) use ($watchedEpisodes) {
             $episode->watched = in_array($episode->id, $watchedEpisodes);            
         });

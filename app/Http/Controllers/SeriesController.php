@@ -6,6 +6,7 @@ use DateTime;
 use App\Models\User;
 use App\Models\Series;
 use App\Mail\SeriesCreated;
+use App\Events\SeriesCreated as SeriesCreatedEvent;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Mail;
@@ -46,17 +47,12 @@ class SeriesController extends Controller
     {
         $serie = $this->repository->add($request);
 
-        $userList = User::all();
-        foreach ($userList as $index => $user) {
-            $email = new SeriesCreated(
-                $serie->nome,
-                $serie->id,
-                $request->seasonsQty,
-                $request->episodesPerSeason,
-            );
-            $when = nou()->addSeconds($index * 5);
-            Mail::to($user)->later($when, $email);         
-        }
+        \App\Events\SeriesCreated::dispatch(
+            $serie->nome,
+            $serie->id,
+            $request-> seasonsQty,
+            $request-> episodesPerSeason
+        );
 
         return to_route('series.index')
             ->with('mensagem.sucesso', "Série '{$serie->nome}' adicionada com sucesso");

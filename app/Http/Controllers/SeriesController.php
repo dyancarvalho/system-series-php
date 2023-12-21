@@ -19,10 +19,7 @@ class SeriesController extends Controller
     public function __construct(private SeriesRepository $repository)
     {
     }
-
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index(Request $request)
     {
         $series = Series::all();
@@ -32,53 +29,47 @@ class SeriesController extends Controller
         ->with('mensagemSucesso', $mensagemSucesso);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('series.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(SeriesFormRequest $request)
-    {
-        $coverPath = $request->file('cover')
-            ->store('series_cover', 'public');
-            $request->coverPath = $coverPath;
+    {        
+        $request->validate([
+            'cover' => 'image|mimes:jpeg,png,jpg,gif', 
+        ]);
+            
+        if ($request->hasFile('cover') && $request->file('cover')->isValid()) {
+            $coverPath = $request->file('cover')->store('series_cover', 'public');
+        } else {
+            $coverPath = 'series_cover/default.png';
+        }
+            
+        $request->coverPath = $coverPath;
+    
         $serie = $this->repository->add($request);
-
+        if (!$request->hasFile('cover') || !$request->file('cover')->isValid()) {
+            $serie->cover = $coverPath;
+            $serie->save();
+        }
+    
         \App\Events\SeriesCreated::dispatch(
             $serie->nome,
             $serie->id,
-            $request-> seasonsQty,
-            $request-> episodesPerSeason
+            $request->seasonsQty,
+            $request->episodesPerSeason
         );
-
+    
         return to_route('series.index')
             ->with('mensagem.sucesso', "Série '{$serie->nome}' adicionada com sucesso");
     }
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
+    
     public function edit(Series $series)
     {
         return view('series.edit')->with('serie', $series);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(SeriesFormRequest $request, Series $series)
     {
         $series->nome = $request->nome;
@@ -88,15 +79,24 @@ class SeriesController extends Controller
         ->with('mensagem.sucesso', "Série '{$series->nome}' atualizada com sucesso");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Series $series)
-    {        
-        $series->delete();
-        
-        return redirect()->route('series.index')
-        ->with('mensagem.sucesso', "Série '{$series->nome}' removida com sucesso");
-    
+    {
+        if ($series->cover && $series->cover !== 'series_cover/default.png') {
+            $coverPath = $series->cover;  
+            $series->delete();  
+
+            if (\Storage::disk('public')->exists($coverPath)) {
+                \Storage::disk('public')->delete($coverPath);
+            }    
+
+            return redirect()->route('series.index')
+                ->with('mensagem.sucesso', "Série '{$series->nome}' removida com sucesso");
+        } else {
+            $series->delete();
+
+            return redirect()->route('series.index')
+                ->with('mensagem.sucesso', "Série '{$series->nome}' removida com sucesso");
+        }
     }
+    
 }

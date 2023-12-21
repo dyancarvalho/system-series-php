@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Series;
+use App\Models\Episode;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
-class SeasonsController extends Controller
+class EpisodesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Series $series)
-    {
-        $seasons = $series->seasons()->with('episodes')->get();
-      
-        return view('seasons.index')->with('seasons', $seasons)->with('series', $series);
+    {   
+        return $series->episodes; 
     }
 
     /**
@@ -36,9 +36,9 @@ class SeasonsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Series $series)
-    {        
-        return $series->seasons;
+    public function show(string $id)
+    {
+        //
     }
 
     /**
@@ -52,9 +52,12 @@ class SeasonsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Episode $episode)
     {
-        //
+        $episode->watched = $request->watched;
+        $episode->save();
+
+        return $episode;
     }
 
     /**

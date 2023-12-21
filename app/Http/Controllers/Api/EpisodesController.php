@@ -9,62 +9,38 @@ use App\Http\Controllers\Controller;
 
 class EpisodesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Series $series)
     {   
         return $series->episodes; 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show(Series $series, int $episodeId)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Episode $episode)
-    {
-        $episode->watched = $request->watched;
-        $episode->save();
+        $episode = $series->episodes()->find($episodeId);
+        
+        if (!$episode) {
+            return response()->json(['error' => 'Episódio não encontrado.'], 404);
+        }
 
         return $episode;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function update(Request $request, Episode $episode)
     {
-        //
+        $episode->watched = $request->watched;
+        $episode->save();
+        return $episode;
+    }
+
+    public function destroy(Series $series, int $episodeId)
+    {
+        $episode = $series->episodes()->find($episodeId);
+    
+        if (!$episode) {
+            return response()->json(['error' => 'Episódio não encontrado.'], 404);
+        }
+    
+        $episode->delete();            
+        return response()->noContent();
     }
 }

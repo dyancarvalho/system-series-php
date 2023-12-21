@@ -13,8 +13,26 @@ class SeasonsController extends Controller
         return $series->seasons;    
     }
 
-    public function show(Series $series)
+    public function show(Series $series, int $seasonId)
     {
-        return $series->episodes;    
+        $season = $series->seasons()->find($seasonId);    
+
+        if(!$season) {
+            return response()->json(['error' => 'Temporada não encontrada.'], 404);
+        }
+
+        return $season;
+    }
+
+    public function destroy(Series $series, int $seasonId)
+    {
+        $season = $series->seasons()->find($seasonId);
+    
+        if (!$season) {
+            return response()->json(['error' => 'Temporada não encontrada.'], 404);
+        }
+    
+        $season->delete();            
+        return response()->noContent();
     }
 }

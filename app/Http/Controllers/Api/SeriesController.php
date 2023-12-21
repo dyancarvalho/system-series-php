@@ -14,7 +14,6 @@ class SeriesController extends Controller
     {        
     }
 
-
     public function index(Request $request)
     {
         $query = Series::query();
